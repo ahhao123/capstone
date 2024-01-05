@@ -1,5 +1,7 @@
 //ktc.dart
 import 'package:app2/login_page.dart';
+import 'package:app2/services/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app2/ReservedPage.dart';
@@ -21,11 +23,8 @@ class LockerReservationModel with ChangeNotifier {
       await lockerRef.update({'reserved': true});
 
       String qrCodeData = 'Locker $lockerNumber';
-      await firestore.collection('reservations').doc().set({
-        'lockerNumber': lockerNumber,
-        'qrCodeData': qrCodeData,
-        // Add other relevant information
-      });
+
+      print('Halo');
 
       buttonStates[index] = true;
       notifyListeners(); // Ensure this line is present
@@ -38,6 +37,7 @@ class KtcPage extends StatelessWidget {
   final LockerReservationModel reservationModel;
 
   KtcPage({super.key, required this.reservationModel});
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,34 @@ class KtcPage extends StatelessWidget {
         child: ListView.builder(
           itemCount: lockerNumbers.length,
           itemBuilder: (BuildContext context, int index) {
-            return buildLockerItem(context, lockerNumbers[index], index);
+            return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('lockers')
+                  .doc(lockerNumbers[index])
+                  .get(),
+              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator(); // Or any other loading indicator
+                }
+
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return Text('Document does not exist');
+                }
+                // Retrieve the 'reserved' status from Firestore
+                bool isReserved = (snapshot.data!.data() as Map<String, dynamic>)['reserved'];
+
+                return buildLockerItem(
+                  context,
+                  lockerNumbers[index],
+                  index,
+                  isReserved,
+                );
+              },
+            );
           },
         ),
       ),
@@ -86,7 +113,7 @@ class KtcPage extends StatelessWidget {
     );
   }
 
-  Widget buildLockerItem(BuildContext context, String lockerNumber, int index) {
+  Widget buildLockerItem(BuildContext context, String lockerNumber, int index, bool isReserved) {
     return Card(
       margin: const EdgeInsets.all(10.0),
       child: ListTile(
@@ -98,9 +125,9 @@ class KtcPage extends StatelessWidget {
           children: [
             Text('Locker $lockerNumber'),
             Text(
-              reservationModel.buttonStates[index] ? 'Not Available' : 'Available',
+              isReserved ? 'Not Available' : 'Available',
               style: TextStyle(
-                color: reservationModel.buttonStates[index] ? Colors.red : Colors.green,
+                color: isReserved ? Colors.red : Colors.green,
               ),
             ),
           ],
@@ -108,7 +135,6 @@ class KtcPage extends StatelessWidget {
       ),
     );
   }
-
 
   Future<void> _showReservationConfirmationDialog(BuildContext context,
       String lockerNumber, int index) async {
@@ -123,16 +149,20 @@ class KtcPage extends StatelessWidget {
               onPressed: () async {
                 Navigator.of(context).pop(); // Close the dialog
                 // Reserve the locker
-                  reservationModel.reserveLocker(index);
+                reservationModel.reserveLocker(index);
                 // Generate QR code data (you may use locker number or a reservation ID)
                 String qrCodeData = 'Locker $lockerNumber';
+                final User? user = auth.currentUser;
+                await DatabaseService(user!.uid).updateQr(qrCodeData);
                 // Navigate to the ReservedPage after reserving
                 _navigateToReservedPage(context, lockerNumber,qrCodeData);
               },
               child: const Text('Yes'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                // Update database
+
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: const Text('No'),
@@ -152,5 +182,4 @@ class KtcPage extends StatelessWidget {
     );
   }
 }
-
 
