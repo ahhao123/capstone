@@ -26,11 +26,10 @@ class _LoginPageState extends State<LoginPage> {
       if (userCredential.user != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
       }
     } catch (e) {
-      print("Error: $e");
       // Handle login errors
       // Show a snackbar or alert dialog to inform the user about the error
       ScaffoldMessenger.of(context).showSnackBar(
