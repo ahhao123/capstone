@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class KdojPage extends StatelessWidget {
   final List<String> lockerNumbers = ['1', '2', '3', '4'];
 
-   KdojPage({super.key});
+  KdojPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -37,10 +37,10 @@ class _RegisterPageState extends State<RegisterPage> {
             _isLoading
                 ? CircularProgressIndicator() // Show a loading indicator while registering
                 : ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    _isLoading = true;
-                  });
+              onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
 
                 String username = _usernameController.text;
                 String email = _emailController.text;
@@ -52,9 +52,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     context,
                     MaterialPageRoute(builder: (context) => HomePage()),
                   );
-                  }
-                 },
-                  child: Text('Register'),
+                }
+              },
+              child: Text('Register'),
             ),
           ],
         ),

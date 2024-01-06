@@ -1,4 +1,6 @@
 //ReservedPage.dart
+import 'package:app2/login_page.dart';
+import 'package:app2/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 
@@ -8,6 +10,18 @@ class ReservedPage extends StatelessWidget {
 
   const ReservedPage({Key? key, required this.buttonLabel, required this.qrCodeData})
       : super(key: key);
+
+
+  Future<void> handleCheckout(BuildContext context) async {
+    final String lockerNumber = buttonLabel;
+    final DatabaseService databaseService = DatabaseService('user_id'); // Replace 'user_id' with the actual user ID
+
+    // Update reservation status to false (not reserved)
+    await databaseService.updateReservationStatus(lockerNumber, false);
+
+    // Navigate back to the previous screen after checkout
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +42,42 @@ class ReservedPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             // Display the locker information or any other relevant details
-            //Text('Reserved Locker: $buttonLabel'),
-            Text('干你老师外国人 老子不想做了TMD'),
+            Text('Reserved Locker: $buttonLabel'),
+            ElevatedButton(
+              onPressed: () => handleCheckout(context),
+              child: const Text('Checkout'),
+            ),
           ],
         ),
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()), // Replace with the actual Login Page
+              );
+            },
+            tooltip: 'Sign Out',
+            heroTag: 'signOut',
+            child: Icon(Icons.logout),
+          ),
+          SizedBox(height: 16),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReservedPage(buttonLabel: '', qrCodeData: '',)), // Replace with the actual Reserved Page
+              );
+            },
+            tooltip: 'Reserved Page',
+            heroTag: 'reservedPage',
+            child: Icon(Icons.qr_code),
+          ),
+        ],
       ),
     );
   }

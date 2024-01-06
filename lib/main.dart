@@ -12,8 +12,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp( ChangeNotifierProvider(
-      create: (context) => LockerReservationModel(),
-      child: const MyApp(),
+    create: (context) => LockerReservationModel(),
+    child: const MyApp(),
   ),
   );
 }

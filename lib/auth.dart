@@ -1,5 +1,8 @@
+//auth.dart
+import 'package:app2/login_page.dart';
 import 'package:app2/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import 'models/user.dart';
 
@@ -44,12 +47,15 @@ class AuthService {
   }
 
   //sign out
-  Future signOut() async {
+  Future signOut(BuildContext context) async {
     try {
-      return await _auth.signOut();
+      await _auth.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
     } catch (e) {
       print(e.toString());
-      return null;
     }
   }
 }

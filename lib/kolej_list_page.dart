@@ -25,7 +25,7 @@ class KolejListPage extends StatelessWidget {
               // Navigate to the KTC page
               Navigator.push(
                 context,
-                  MaterialPageRoute(builder: (context) => KtcPage(reservationModel: LockerReservationModel())),
+                MaterialPageRoute(builder: (context) => KtcPage(reservationModel: LockerReservationModel())),
               );
             },
           ),
