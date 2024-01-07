@@ -1,5 +1,8 @@
+//auth.dart
+import 'package:app2/login_page.dart';
 import 'package:app2/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import 'models/user.dart';
 
@@ -20,8 +23,12 @@ class AuthService {
   Future register(String email, String password, String username) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+          email: email,
+          password: password
+      )
+      ;
       User? user = result.user;
+
       await DatabaseService(user!.uid).updateUserData(username, 'None');
       return _userFromFirebaseUser(user);
     } catch (e) {
@@ -44,12 +51,15 @@ class AuthService {
   }
 
   //sign out
-  Future signOut() async {
+  Future signOut(BuildContext context) async {
     try {
-      return await _auth.signOut();
+      await _auth.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
     } catch (e) {
       print(e.toString());
-      return null;
     }
   }
 }
