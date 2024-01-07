@@ -26,7 +26,7 @@ class ReservedPage extends StatelessWidget {
     // Navigate back to the HomePage after checkout
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
+      MaterialPageRoute(builder: (context) => HomePage(buttonLabel: '', qrCodeData: '', userId: '',)),
     );
   }
 

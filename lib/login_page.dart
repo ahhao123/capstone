@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       if (userCredential.user != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage(buttonLabel: '', qrCodeData: '', userId: '',)),
         );
       }
     } catch (e) {

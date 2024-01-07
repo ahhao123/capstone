@@ -51,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   await _auth.register(email, password, username);
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    MaterialPageRoute(builder: (context) => HomePage(buttonLabel: '', qrCodeData: '', userId: '',)),
                   );
                 }
               },

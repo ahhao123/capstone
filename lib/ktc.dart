@@ -198,7 +198,6 @@ class KtcPage extends StatelessWidget {
             ),
           ],
         ),
-        subtitle: isReservedByCurrentUser ? const Text('Reserved by You') : null,
       ),
     );
   }
@@ -302,12 +301,12 @@ class KtcPage extends StatelessWidget {
     }
   }
 
-  // void _navigateToReservedPage(BuildContext context, String lockerNumber, String userId) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => ReservedPage(buttonLabel: lockerNumber, qrCodeData: '', userId: userId),
-  //     ),
-  //   );
-  // }
+// void _navigateToReservedPage(BuildContext context, String lockerNumber, String userId) {
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//       builder: (context) => ReservedPage(buttonLabel: lockerNumber, qrCodeData: '', userId: userId),
+//     ),
+//   );
+// }
 }

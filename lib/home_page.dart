@@ -1,11 +1,36 @@
 //home.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'kolej_list_page.dart'; // Import the KolejListPage
 import 'login_page.dart';
 import 'package:app2/ReservedPage.dart';
 
+
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final String buttonLabel;
+  final String qrCodeData;
+  final String userId;
+
+  HomePage({super.key, required this.buttonLabel, required this.qrCodeData, required this.userId});
+  Future<String> getCurrentUserQR(String userId) async {
+    try {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        return userDoc.get('qr') ?? ''; // Fetch QR code from user document
+      }
+      return '';
+    } catch (e) {
+      print('Error fetching user QR: $e');
+      return '';
+    }
+  }
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +46,7 @@ class HomePage extends StatelessWidget {
                 // Navigate to the KolejListPage
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const KolejListPage()),
+                  MaterialPageRoute(builder: (context) => KolejListPage(buttonLabel: '', qrCodeData: '', userId: '',)),
                 );
               },
               child: const Text('Vacancy'),
@@ -54,14 +79,32 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ReservedPage(buttonLabel: '', qrCodeData: '', userId: '',)), // Replace with the actual Reserved Page
-              );
+            onPressed: () async {
+              final User? user = auth.currentUser;
+              String currentUserQR = await getCurrentUserQR(user!.uid); // Fetch current user's QR code
+              print('Second Here');
+              print(currentUserQR);
+
+              if (currentUserQR.isNotEmpty) {
+                // Update qrCodeData with the fetched QR code
+
+                // Navigate to the ReservedPage with the updated qrCodeData
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReservedPage(
+                      buttonLabel: buttonLabel,
+                      qrCodeData: currentUserQR, // Pass the updated qrCodeData
+                      userId: user!.uid,
+                    ),
+                  ),
+                );
+              } else {
+                print('No QR code data found for the current user');
+                // Handle the case where no QR code data is available for the user
+                // You can show a message or take appropriate action here
+              }
             },
-            tooltip: 'Reserved Page',
-            heroTag: 'reservedPage',
             child: const Icon(Icons.qr_code),
           ),
         ],
