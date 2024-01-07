@@ -9,17 +9,19 @@ import 'package:barcode_widget/barcode_widget.dart';
 class ReservedPage extends StatelessWidget {
   final String buttonLabel;
   final String qrCodeData;
-  final String userId; // Pass the user ID as a parameter
+  final String userId;
 
   const ReservedPage({Key? key, required this.buttonLabel, required this.qrCodeData, required this.userId})
       : super(key: key);
 
   Future<void> handleCheckout(BuildContext context) async {
     final String lockerNumber = buttonLabel;
+    final String id =  userId;
     final DatabaseService databaseService = DatabaseService(userId);
 
     // Update reservation status to false (not reserved)
-    await databaseService.updateReservationStatus(lockerNumber, false);
+    await databaseService.updateReservationStatus(lockerNumber, id, false);
+
 
     // Navigate back to the HomePage after checkout
     Navigator.pushReplacement(
@@ -47,7 +49,7 @@ class ReservedPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             // Display the locker information or any other relevant details
-            Text('Reserved Locker: $buttonLabel'),
+            Text('Reserved Locker: $qrCodeData'),
             ElevatedButton(
               onPressed: () => handleCheckout(context),
               child: const Text('Checkout'),

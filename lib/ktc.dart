@@ -11,13 +11,17 @@ class LockerReservationModel with ChangeNotifier {
   List<bool> buttonStates = [false, false, false, false];
 
   Future<void> reserveLocker(int index, String userId) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final String lockerNumber = (index + 1).toString();
     final DocumentReference lockerRef = firestore.collection('lockers').doc(lockerNumber);
-    final DatabaseService databaseService = DatabaseService(userId);
+    final DatabaseService databaseService = DatabaseService(user!.uid);
 
     try {
       // Check if the locker is already reserved
+      print('Testing');
+      print(user!.uid);
       DocumentSnapshot lockerDoc = await lockerRef.get();
       if (lockerDoc.exists) {
         String reservedBy = (lockerDoc.data() as Map<String, dynamic>)['reservedBy'];
@@ -29,7 +33,7 @@ class LockerReservationModel with ChangeNotifier {
       }
 
       // Attempt to reserve the locker
-      await databaseService.reserveLocker(lockerNumber);
+      await databaseService.reserveLocker(lockerNumber, user!.uid);
 
       // If reservation is successful, update the UI and Firestore
       buttonStates[index] = true;
@@ -47,15 +51,38 @@ class LockerReservationModel with ChangeNotifier {
 }
 
 class KtcPage extends StatelessWidget {
+
   final List<String> lockerNumbers = ['1', '2', '3', '4'];
   final LockerReservationModel reservationModel;
-  final String userId; // Add this parameter
-  final String qrCodeData;
+  final String userId;
+  String qrCodeData = '';
   final String buttonLabel;
 
+  KtcPage({
+    Key? key,
+    required this.reservationModel,
+    required this.userId,
+    required this.qrCodeData,
+    required this.buttonLabel,
+  });
 
+  Future<String> getCurrentUserQR(String userId) async {
+    try {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
 
-  KtcPage({super.key, required this.reservationModel, required this.userId, required this.qrCodeData, required this.buttonLabel});
+      if (userDoc.exists) {
+        return userDoc.get('qr') ?? ''; // Fetch QR code from user document
+      }
+      return '';
+    } catch (e) {
+      print('Error fetching user QR: $e');
+      return '';
+    }
+  }
+
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
@@ -119,17 +146,31 @@ class KtcPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReservedPage(
-                    buttonLabel: buttonLabel,
-                    qrCodeData: qrCodeData,
-                    userId: userId,
+            onPressed: () async {
+              final User? user = auth.currentUser;
+              String currentUserQR = await getCurrentUserQR(user!.uid); // Fetch current user's QR code
+              print('Second Here');
+              print(currentUserQR);
+
+              if (currentUserQR.isNotEmpty) {
+                // Update qrCodeData with the fetched QR code
+
+                // Navigate to the ReservedPage with the updated qrCodeData
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReservedPage(
+                      buttonLabel: buttonLabel,
+                      qrCodeData: currentUserQR, // Pass the updated qrCodeData
+                      userId: user!.uid,
+                    ),
                   ),
-                ),
-              );
+                );
+              } else {
+                print('No QR code data found for the current user');
+                // Handle the case where no QR code data is available for the user
+                // You can show a message or take appropriate action here
+              }
             },
             child: const Icon(Icons.qr_code),
           ),
@@ -228,7 +269,7 @@ class KtcPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the pop-up window
                       // Navigate to the ReservedPage after reserving
-                      _navigateToReservedPage(context, lockerNumber, userId);
+                      // _navigateToReservedPage(context, lockerNumber, userId);
                     },
                     child: const Text('OK'),
                   ),
@@ -261,12 +302,12 @@ class KtcPage extends StatelessWidget {
     }
   }
 
-  void _navigateToReservedPage(BuildContext context, String lockerNumber, String userId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReservedPage(buttonLabel: lockerNumber, qrCodeData: '', userId: userId),
-      ),
-    );
-  }
+  // void _navigateToReservedPage(BuildContext context, String lockerNumber, String userId) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ReservedPage(buttonLabel: lockerNumber, qrCodeData: '', userId: userId),
+  //     ),
+  //   );
+  // }
 }
