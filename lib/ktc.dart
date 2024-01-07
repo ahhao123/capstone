@@ -14,6 +14,8 @@ class LockerReservationModel with ChangeNotifier {
     final String lockerNumber = (index + 1).toString();
     final DocumentReference lockerRef = firestore.collection('lockers').doc(lockerNumber);
 
+    final DocumentReference loc= firestore.collection('lockers').doc(lockerNumber);
+
 
     // Check Firebase for availability before reserving
     DocumentSnapshot lockerDoc = await lockerRef.get();
