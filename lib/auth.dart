@@ -23,8 +23,12 @@ class AuthService {
   Future register(String email, String password, String username) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+          email: email,
+          password: password
+      )
+      ;
       User? user = result.user;
+
       await DatabaseService(user!.uid).updateUserData(username, 'None');
       return _userFromFirebaseUser(user);
     } catch (e) {
@@ -52,7 +56,7 @@ class AuthService {
       await _auth.signOut();
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } catch (e) {
       print(e.toString());

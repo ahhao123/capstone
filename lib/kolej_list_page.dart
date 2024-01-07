@@ -25,7 +25,7 @@ class KolejListPage extends StatelessWidget {
               // Navigate to the KTC page
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => KtcPage(reservationModel: LockerReservationModel())),
+                MaterialPageRoute(builder: (context) => KtcPage(reservationModel: LockerReservationModel(), userId: '',)),
               );
             },
           ),
@@ -68,27 +68,27 @@ class KolejListPage extends StatelessWidget {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LoginPage()), // Replace with the actual Login Page
+              MaterialPageRoute(builder: (context) => const LoginPage()), // Replace with the actual Login Page
             );
           },
           tooltip: 'Sign Out',
           heroTag: 'signOut',
-          child: Icon(Icons.logout),
+          child: const Icon(Icons.logout),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         FloatingActionButton(
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ReservedPage(buttonLabel: '', qrCodeData: '',)), // Replace with the actual Reserved Page
+              MaterialPageRoute(builder: (context) => const ReservedPage(buttonLabel: '', qrCodeData: '', userId: '',)), // Replace with the actual Reserved Page
             );
           },
           tooltip: 'Reserved Page',
           heroTag: 'reservedPage',
-          child: Icon(Icons.qr_code),
-          ),
-        ],
-      ),
+          child: const Icon(Icons.qr_code),
+        ),
+      ],
+    ),
     );
   }
 }

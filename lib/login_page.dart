@@ -1,3 +1,4 @@
+//login_page.dart
 import 'package:app2/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       if (userCredential.user != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       }
     } catch (e) {
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
                 );
               },
               child: const Text('Register'),
