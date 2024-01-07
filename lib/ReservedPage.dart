@@ -1,3 +1,4 @@
+
 //ReservedPage.dart
 import 'package:app2/home_page.dart';
 import 'package:app2/login_page.dart';
@@ -74,11 +75,15 @@ class ReservedPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReservedPage(buttonLabel: '', qrCodeData: '', userId: '',)), // Replace with the actual Reserved Page
+                MaterialPageRoute(
+                  builder: (context) => ReservedPage(
+                    buttonLabel: buttonLabel,
+                    qrCodeData: qrCodeData,
+                    userId: userId,
+                  ),
+                ),
               );
             },
-            tooltip: 'Reserved Page',
-            heroTag: 'reservedPage',
             child: const Icon(Icons.qr_code),
           ),
         ],

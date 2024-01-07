@@ -50,8 +50,12 @@ class KtcPage extends StatelessWidget {
   final List<String> lockerNumbers = ['1', '2', '3', '4'];
   final LockerReservationModel reservationModel;
   final String userId; // Add this parameter
+  final String qrCodeData;
+  final String buttonLabel;
 
-  KtcPage({super.key, required this.reservationModel, required this.userId});
+
+
+  KtcPage({super.key, required this.reservationModel, required this.userId, required this.qrCodeData, required this.buttonLabel});
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
@@ -116,13 +120,17 @@ class KtcPage extends StatelessWidget {
           const SizedBox(height: 16),
           FloatingActionButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => ReservedPage(buttonLabel: '', qrCodeData: '', userId: userId,)), // Replace with the actual Reserved Page
+                MaterialPageRoute(
+                  builder: (context) => ReservedPage(
+                    buttonLabel: buttonLabel,
+                    qrCodeData: qrCodeData,
+                    userId: userId,
+                  ),
+                ),
               );
             },
-            tooltip: 'Reserved Page',
-            heroTag: 'reservedPage',
             child: const Icon(Icons.qr_code),
           ),
         ],
