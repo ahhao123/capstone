@@ -86,17 +86,17 @@ class KolejListPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        FloatingActionButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage()), // Replace with the actual Login Page
-            );
-          },
-          tooltip: 'Sign Out',
-          heroTag: 'signOut',
-          child: const Icon(Icons.logout),
-        ),
+        // FloatingActionButton(
+        //   onPressed: () {
+        //     Navigator.pushReplacement(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => const LoginPage()), // Replace with the actual Login Page
+        //     );
+        //   },
+        //   tooltip: 'Sign Out',
+        //   heroTag: 'signOut',
+        //   child: const Icon(Icons.logout),
+        // ),
         const SizedBox(height: 16),
         FloatingActionButton(
           onPressed: () async {
@@ -115,7 +115,7 @@ class KolejListPage extends StatelessWidget {
                   builder: (context) => ReservedPage(
                     buttonLabel: buttonLabel,
                     qrCodeData: currentUserQR, // Pass the updated qrCodeData
-                    userId: user!.uid,
+                    userId: user.uid,
                   ),
                 ),
               );

@@ -95,7 +95,7 @@ class HomePage extends StatelessWidget {
                     builder: (context) => ReservedPage(
                       buttonLabel: buttonLabel,
                       qrCodeData: currentUserQR, // Pass the updated qrCodeData
-                      userId: user!.uid,
+                      userId: user.uid,
                     ),
                   ),
                 );

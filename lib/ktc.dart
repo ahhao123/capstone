@@ -50,12 +50,10 @@ class LockerReservationModel with ChangeNotifier {
   }
 }
 
-class KtcPage extends StatelessWidget {
-
-  final List<String> lockerNumbers = ['1', '2', '3', '4'];
+class KtcPage extends StatefulWidget {
   final LockerReservationModel reservationModel;
   final String userId;
-  String qrCodeData = '';
+  final String qrCodeData;
   final String buttonLabel;
 
   KtcPage({
@@ -64,7 +62,15 @@ class KtcPage extends StatelessWidget {
     required this.userId,
     required this.qrCodeData,
     required this.buttonLabel,
-  });
+  }) : super(key: key);
+
+  @override
+  _KtcPageState createState() => _KtcPageState();
+}
+
+class _KtcPageState extends State<KtcPage> {
+  final List<String> lockerNumbers = ['1', '2', '3', '4'];
+  String qrCodeData = '';
 
   Future<String> getCurrentUserQR(String userId) async {
     try {
@@ -115,7 +121,8 @@ class KtcPage extends StatelessWidget {
                 }
                 // Retrieve the 'reserved' status from Firestore
                 bool isReserved = (snapshot.data!.data() as Map<String, dynamic>)['reserved'];
-                bool isReservedByCurrentUser = (snapshot.data!.data() as Map<String, dynamic>)['reservedBy'] == userId;
+                bool isReservedByCurrentUser =
+                    (snapshot.data!.data() as Map<String, dynamic>)['reservedBy'] == widget.userId;
 
                 return buildLockerItem(
                   context,
@@ -133,18 +140,18 @@ class KtcPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()), // Replace with the actual Login Page
-              );
-            },
-            tooltip: 'Sign Out',
-            heroTag: 'signOut',
-            child: const Icon(Icons.logout),
-          ),
-          const SizedBox(height: 16),
+          // FloatingActionButton(
+          //   onPressed: () {
+          //     Navigator.pushReplacement(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const LoginPage()), // Replace with the actual Login Page
+          //     );
+          //   },
+          //   tooltip: 'Sign Out',
+          //   heroTag: 'signOut',
+          //   child: const Icon(Icons.logout),
+          // ),
+          // const SizedBox(height: 16),
           FloatingActionButton(
             onPressed: () async {
               final User? user = auth.currentUser;
@@ -160,7 +167,7 @@ class KtcPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ReservedPage(
-                      buttonLabel: buttonLabel,
+                      buttonLabel: widget.buttonLabel,
                       qrCodeData: currentUserQR, // Pass the updated qrCodeData
                       userId: user!.uid,
                     ),
@@ -179,7 +186,8 @@ class KtcPage extends StatelessWidget {
     );
   }
 
-  Widget buildLockerItem(BuildContext context, String lockerNumber, int index, bool isReserved, bool isReservedByCurrentUser) {
+  Widget buildLockerItem(BuildContext context, String lockerNumber, int index, bool isReserved,
+      bool isReservedByCurrentUser) {
     return Card(
       margin: const EdgeInsets.all(10.0),
       child: ListTile(
@@ -202,9 +210,11 @@ class KtcPage extends StatelessWidget {
     );
   }
 
-  Future<void> _showReservationConfirmationDialog(BuildContext context, String lockerNumber, int index) async {
+  Future<void> _showReservationConfirmationDialog(
+      BuildContext context, String lockerNumber, int index) async {
     try {
-      final DocumentReference lockerRef = FirebaseFirestore.instance.collection('lockers').doc(lockerNumber);
+      final DocumentReference lockerRef =
+      FirebaseFirestore.instance.collection('lockers').doc(lockerNumber);
       DocumentSnapshot lockerDoc = await lockerRef.get();
 
       if (lockerDoc.exists && (lockerDoc.data() as Map<String, dynamic>)['reserved']) {
@@ -254,7 +264,7 @@ class KtcPage extends StatelessWidget {
 
         if (userConfirmed) {
           // Proceed with reservation
-          await reservationModel.reserveLocker(index, userId);
+          await widget.reservationModel.reserveLocker(index, widget.userId);
 
           // Show a pop-up window for successful reservation
           showDialog(

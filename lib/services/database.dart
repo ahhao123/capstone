@@ -34,12 +34,12 @@ class DatabaseService {
 
     // Update user's reservation
 
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({'qr': 'Locker '+ lockerNumber});
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({'qr': 'Locker $lockerNumber'});
   }
 
   Future<void> updateReservationStatus(String lockerNumber, String id, bool isReserved) async {
 
-    String id_latest = '';
+    String idLatest = '';
     // Update the reservation status of the specified locker
 
     DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -48,10 +48,10 @@ class DatabaseService {
         .get();
 
     if (userDoc.exists) {
-      id_latest= userDoc.get('qr') ?? ''; // Fetch QR code from user document
+      idLatest= userDoc.get('qr') ?? ''; // Fetch QR code from user document
     }
 
-    List<String> parts = id_latest.split(' ');
+    List<String> parts = idLatest.split(' ');
 
     // Get the last part of the split string
     String number = parts.last;
